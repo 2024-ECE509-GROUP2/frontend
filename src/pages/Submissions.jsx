@@ -1,6 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+
+// Moved from /components/dashboard/
+
 const Submissions = () => {
   return (
     <>

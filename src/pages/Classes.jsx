@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./classes.css";
+import "../styles/classes.css";
 import book from "../../assets/book.png";
+
+// Moved from /components/classes/
 
 const Classes = () => {
   return (
