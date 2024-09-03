@@ -87,7 +87,12 @@ export default function AppRoute() {
     const routes = createBrowserRouter(
         createRoutesFromElements(
             <>
-                <Route path="/frontend"> {/* This should make needed adjustments for our routes */}
+                <Route path="/"> {/* 
+                
+                    This should make needed adjustments for our routes 
+                    (Not removing yet)
+                    
+                    */}
                     
                     <Route index element={<Login />} errorElement={<ErrorPage />} />
                     <Route
