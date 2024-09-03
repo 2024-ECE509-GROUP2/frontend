@@ -1,21 +1,15 @@
 import ZoomMtgEmbedded from '@zoom/meetingsdk/embedded';
-
-
+import { REST_API_BASE_URL } from '../../constants/BaseConfig';
 
 export default function CoursesPage() {
 
     const client = ZoomMtgEmbedded.createClient()
 
-
-    var authEndpoint = ''
-    var sdkKey = process.env.ZOOM_SDK_KEY
-    var meetingNumber = '123456789'
-    var passWord = ''
-    var role = 0
-    var userName = 'React'
+    var authEndpoint = REST_API_BASE_URL +'/zoom/v1/meeting/join'
+    var meetingNumber = '9027840028'
+    var role =0
+    var userName = ''
     var userEmail = ''
-    var registrantToken = ''
-    var zakToken = ''
 
     function getSignature(e) {
         e.preventDefault();
@@ -24,18 +18,20 @@ export default function CoursesPage() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                meetingNumber: meetingNumber,
-                role: role
+                'meeting': meetingNumber,
+                'role': role
             })
-        }).then(res => res.json())
-            .then(response => {
-                startMeeting(response.signature)
-            }).catch(error => {
-                console.error(error)
-            })
+        }).then(
+            res => {
+                return res.json()
+        }).then(response => {
+            startMeeting(response.signature, response.sdkKey, response.token, )
+        }).catch(error => {
+            console.error(error)
+        })
     }
 
-    function startMeeting(signature) {
+    function startMeeting(signature, sdkKey, zakToken) {
 
         let meetingSDKElement = document.getElementById('meetingSDKElement');
 
@@ -44,11 +40,10 @@ export default function CoursesPage() {
                 signature: signature,
                 sdkKey: sdkKey,
                 meetingNumber: meetingNumber,
-                password: passWord,
-                userName: userName,
+                password: '59hs5i',
+                userName: 'Student',
                 userEmail: userEmail,
-                tk: registrantToken,
-                zak: zakToken
+                // zak: zakToken
             }).then(() => {
                 console.log('joined successfully')
             }).catch((error) => {

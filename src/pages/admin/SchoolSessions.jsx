@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import { NotificationContext } from "../contexts/NotificationContex";
+import { AuthContext } from "../../contexts/AuthContext";
+import { NotificationContext } from "../../contexts/NotificationContex";
 
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API
 
-export default function StaffSessionPage() {
+export default function SchoolSessionPage() {
 
 
     let [initial, setInitial] = useState(false);
@@ -23,11 +23,18 @@ export default function StaffSessionPage() {
 
     let [sessions, setSessions] = useState({
         items: [],
-        isLoading: false
+        shouldLoad: true
+    })
+
+    let [programmes, setProgrammes] = useState({
+        items: [],
+        selected: '',
+        shouldLoad: true
     })
 
     let [currentSession, setSession] = useState({
         session: null,
+        programme: '',
         label: '',
         started: false,
         dateStarted: new Date().toISOString().split('T')[0],
@@ -38,16 +45,27 @@ export default function StaffSessionPage() {
     
     
     useEffect(() => {
-        if(!initial) {
+        if(sessions.shouldLoad) {
             fetch(REST_API_BASE_URL+"/api/v1/sessions/")
             .then(res=> res.json())
             .then(json => {
                 console.log(json)
                 setSessions({
                     items: json,
-                    isLoading: true
+                    shouldLoad: false
                 })
-                setInitial(true)
+            });
+        }
+
+        if(programmes.shouldLoad) {
+            fetch(REST_API_BASE_URL+"/api/v1/programme/")
+            .then(res=> res.json())
+            .then(json => {
+                console.log(json)
+                setProgrammes({
+                    items: json,
+                    shouldLoad: false
+                })
             });
         }
         
@@ -57,6 +75,14 @@ export default function StaffSessionPage() {
         return (
             <>
                 <option value={data['uuid']}>{data['session_label']}</option>
+            </>
+        )
+    })
+
+    const programmeOptions = programmes.items.map( data => {
+        return (
+            <>
+                <option value={data['uuid']}>{data['programme_label']}</option>
             </>
         )
     })
@@ -76,6 +102,7 @@ export default function StaffSessionPage() {
             if(getSession != null) {
                 setSession({
                     session: sessionUuid,
+                    programme: getSession['programme'],
                     label: getSession['session_label'],
                     started: getSession['has_started'],
                     dateStarted: getSession['date_start'],
@@ -86,6 +113,7 @@ export default function StaffSessionPage() {
         }else {
             setSession({
                 session: null,
+                programme: '',
                 label: '',
                 started: false,
                 dateStarted: Date(),
@@ -104,6 +132,7 @@ export default function StaffSessionPage() {
             method: "post",
             body: JSON.stringify({
                 "session_label": currentSession.label,
+                "programme": currentSession.programme,
                 "date_start": "2011-04-23T18:25:43.511Z"
             })
         })
@@ -135,6 +164,7 @@ export default function StaffSessionPage() {
             method: "put",
             body: JSON.stringify({
                 "session_label": currentSession.label,
+                "programme": currentSession.programme,
                 "has_started": currentSession.started,
                 "date_start": currentSession.dateStarted,
                 "has_ended": currentSession.ended,
@@ -157,6 +187,7 @@ export default function StaffSessionPage() {
             setInitial(false)
             setSession({
                 session: json['uuid'],
+                programme: json['programme'],
                 label: json['session_label'],
                 started:  json['has_started'],
                 dateStarted:  json['date_start'].split('T')[0],
@@ -224,6 +255,8 @@ export default function StaffSessionPage() {
             setSession( values => ({...values, dateStarted: fieldValue }))
         }else if(fieldName === 'sessionEndDate') {
             setSession( values => ({...values, dateEnded: fieldValue}))
+        }else if(fieldName === 'selectProgramme') {
+            setSession( values => ({...values, programme: fieldValue}))
         }
         
         console.log(currentSession)
@@ -236,10 +269,20 @@ export default function StaffSessionPage() {
                 <section className="page-section">
                     <form className="form-section-group" onSubmit={handleSubmittedAdd}>
                         <div className="form-group-row">
-                            <input type="text" name="sessionLabel" id="" value={currentSession.label} onChange={handleFormChange} placeholder="Session Label" />
+                            <label htmlFor="selectProgramme">Programme</label>
+                            <select className="" name="selectProgramme" id="selectProgrammeOptions" value={currentSession.programme} onChange={handleFormChange}>
+                                <option value=""></option>
+                                {programmeOptions}
+                            </select>
                         </div>
                         
                         <div className="form-group-row">
+                            <label htmlFor="selectSession">Session</label>
+                            <input type="text" name="sessionLabel" id="" value={currentSession.label} onChange={handleFormChange} placeholder="Label" />
+                        </div>
+
+                        <div className="form-group-row">
+                            
                             <input type="submit" name="sessionSubmit" value="Add" />
                         </div>
                     </form>
@@ -254,6 +297,13 @@ export default function StaffSessionPage() {
                     <form className="form-section-group" onSubmit={handleSubmittedUpdate}>
                         <div className="form-group-row">
                             <input type="text" name="sessionLabel" value={currentSession.label} onChange={handleFormChange} placeholder="Session Label" />
+                        </div>
+                        <div className="form-group-row">
+                            <label htmlFor="selectProgramme">Programme</label>
+                            <select className="" name="selectProgramme" id="selectProgrammeOptions" value={currentSession.programme} onChange={handleFormChange}>
+                                <option value=""></option>
+                                {programmeOptions}
+                            </select>
                         </div>
                         <div className="form-group-row">
                             <label htmlFor="sessionStarted">Session Started</label>

@@ -13,8 +13,8 @@ export default function NotificationBar() {
 
     let classes = "notification "+type+" ";
 
-    if (closed) {
-        classes = "notification "+type+" closed";
+    if (!closed) {
+        classes = "notification "+type+" show";
     }
 
     function handleClose() {

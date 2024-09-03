@@ -1,8 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 import "../styles/login.css";
+import { REST_API_BASE_URL } from "../constants/BaseConfig";
+import { NotificationContext } from "../contexts/NotificationContex";
 
 
 // Moved from /components/login/
@@ -10,6 +12,7 @@ import "../styles/login.css";
 const Login = () => {
 
     let navigate = useNavigate();
+    let notifier = useContext(NotificationContext)
     let auth = useContext(AuthContext);
 
     console.log(auth.user);
@@ -34,17 +37,44 @@ const Login = () => {
     function handleStudentLogin(event) {
         event.preventDefault();
 
-        var user = {
-            id: 'sample1234',
-            firstname: "John",
-            lastname: "Ihyemi",
-            isStaff: false
-        }
+        fetch(REST_API_BASE_URL+'/api/v1/login/', {
+            method: 'post',
+            body: JSON.stringify({
+                "id": 'u18/302001'
+            })
+        })
+        .then( response => {
 
-        auth.signin(user, () => {
+            if (response.status === 200) {
+                notifier.pushNotice("Login Successful", "", 'success')
+                
+                return response.json()
+            } else {
+                notifier.pushNotice("Login Failed", "", 'error')
 
-            navigate("/dashboard", { replace: true });
-        });
+                console.log("Status: " + response.status)
+                return Promise.reject("server")
+            }
+            
+            
+        })
+        .then(
+            json => {
+
+                var user = {
+                    id: json['uuid'],
+                    firstname: json['first_name'],
+                    lastname: json['last_name'],
+                    isStaff: json['user_type'] == "staff"
+                }
+
+                auth.signin(user, () => {
+                    navigate("/dashboard", { replace: true });
+                });
+            }
+        )
+
+        
     }
 
     function handleStaffLogin(event) {
@@ -68,9 +98,7 @@ const Login = () => {
     }
 
     if (auth.user != null) {
-        useEffect(() => {
-            navigate("/dashboard");
-        })
+        navigate("/dashboard");
     }
 
 
@@ -95,27 +123,30 @@ const Login = () => {
                         <div className="form-group">
                             <input type="ID" id="ID" placeholder="Password" />
                         </div>
-                        <input type="checkbox" id="keep-signed-in" />
-                        <span className="checkmark"></span>
-                        <label htmlFor="keep-signed-in" className="checkbox-container">
-                            Keep me signed in until I sign out
-                        </label>
+                        <div className="form-group">
 
-                        <button type="submit" onClick={handleStudentLogin} style={{ fontSize: "16px" }}>
-                            Student Sign In
-                        </button>
-                        <button type="submit" onClick={handleStaffLogin} style={{ fontSize: "16px" }}>
-                            Staff Sign In
-                        </button>
+                            <div className="form-group-row">
+                                <input type="checkbox" id="keep-signed-in" />
+                                <span className="checkmark"></span>
+                                <label htmlFor="keep-signed-in" className="checkbox-container">
+                                    Keep me signed in until I sign out
+                                </label>
+                            </div>
+                            
 
-
-                        <label>
-                            <p>
+                            <button type="submit" onClick={handleStudentLogin} style={{ fontSize: "16px" }}>
+                                Student Sign In
+                            </button>
+                            <button type="submit" onClick={handleStaffLogin} style={{ fontSize: "16px" }}>
+                                Staff Sign In
+                            </button>
+                            <p style={{width: 100+'%'}}>
                                 <a href="" style={{ textAlign: "center" }}>
                                     Forgot Password?
                                 </a>
                             </p>
-                        </label>
+                        </div>
+                        
                     </form>
                 </div>
             </div>

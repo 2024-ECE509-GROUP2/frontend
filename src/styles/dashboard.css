@@ -6,6 +6,7 @@
 
 .dashboard-sidebar-links {
   list-style-type: none;
+
 }
 
 .dashboard-sidebar-sublinks {
@@ -13,14 +14,53 @@
 }
 
 .dashboard-sidebar-link {
-  padding: 5px 10px;
-  margin: 10px 5px;
+  padding: 5px 0px;
+  margin: 10px 0;
 }
 
 .dashboard-sidebar-link a{
   color: white;
   text-decoration: none;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.dashboard-sidebar-link a span i::before{
+  transition: 0.4s ease;
+}
+
+.dashboard-sidebar-link.dashboard-sidebar-link--active a span i::before{
+  transform: rotate(90deg);
+}
+
+.dashboard-sidebar-sublink {
+  font-size: 0.8rem;
+  padding: 5px 0px;
+  margin: 10px 0px;
+}
+
+.dashboard-sidebar-sublink a{
+  color: white !important;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 10px 0px;
+}
+
+.dashboard-sidebar-link div.dropdown-container {
+  padding-left: 20px;
+  max-height: 0px;
+  overflow: hidden;
+  background-color: var(--submenu-colour);
+  transition: 0.3s ease;
+}
+
+.dashboard-sidebar-link.dashboard-sidebar-link--active div.dropdown-container {
+  display: block;
+  height: 100%;
+  max-height: max-content;
+  background-color: var(--submenu-colour);
 }
 
 .dashboard-sidebar-link a:hover{
@@ -30,8 +70,15 @@
 
 .dashboard-sidebar-link--active a{
   color: var(--primary-colour);
-  padding: 10px 15px;
-  margin: 10px 5px;
+}
+
+.dashboard-sidebar-sublink a:hover{
+  color: var(--primary-colour) !important;
+  text-decoration: none;
+}
+
+.dashboard-sidebar-sublink--active a{
+  color: var(--primary-colour) !important;
 }
 
 div.dashboard-content {

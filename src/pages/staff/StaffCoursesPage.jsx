@@ -1,21 +1,27 @@
-import { useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import { NotificationContext } from "../contexts/NotificationContex";
-
-const REST_API_BASE_URL = import.meta.env.VITE_REST_API
+import { AuthContext } from "../../contexts/AuthContext";
+import { NotificationContext } from "../../contexts/NotificationContex";
+import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import CourseTile from "../../components/custom/CourseTile";
+import StudentTile from "../../components/custom/StudentTile";
 
 export default function StaffCoursePage() {
-
-    console.log(REST_API_BASE_URL)
-
-    let [initialized, setInitialized] = useState(false);
 
     let navigate = useNavigate();
 
     let auth = useContext(AuthContext);
     let notifier = useContext(NotificationContext)
 
+    if(auth.user == null) {
+        useEffect(() => {
+            navigate("/");
+        })
+    }
+
+    let [isSideBarClosed, toggleSideBar] = useState(true);
+
+    
     let [course, setCourse] = useState({
         uuid: null,
         name: '',
@@ -25,59 +31,43 @@ export default function StaffCoursePage() {
 
     let [courses, setCourses] = useState({
         items: [],
-        isLoading: true
+        shouldFetchItems: true
     })
 
-    let [isSideBarClosed, toggleSideBar] = useState(true);
 
-    if(auth.user == null) {
-        useEffect(() => {
-            navigate("/");
-        })
-    }
-
+   
     useEffect(()=> {
-        if(!initialized) {
+        if(courses.shouldFetchItems) {
             fetch(REST_API_BASE_URL+"/api/v1/courses/")
             .then(res=> res.json())
             .then(json => {
                 console.log(json)
                 setCourses({
                     items: json,
-                    isLoading: false
+                    shouldFetchItems: false
                 })
-                setInitialized(true);
             });
         }
     })
 
+    let [searchValue, setSearchValue] = useState('')
+
+    function handleSearchFieldUpdate(event) {
+        var value = event.target.value;
+
+        setSearchValue(value);
+    }
+
     const options = courses.items.map( data => {
 
-        let classes = "selectable-tile"
-        if(data['uuid'] === course.uuid) {
-            classes = "selectable-tile selected"
+        if(searchValue.length > 1) {
+            if(!data['course_name'].toLowerCase().includes(searchValue.toLowerCase()))
+                return
         }
+        
         return (
             <>
-                <button key={data['uuid']} className={classes} name="itemClick" id="" onClick={() => handleSelectCourse(data['uuid'])} value={data['uuid']}>
-                    <div className="list-tile" >
-                        <span className="leading">
-                            <i className="bi-journal"></i>
-                        </span>
-                        <div className="body">
-                            <h6 className="title">
-                                {data['course_name']}
-                            </h6>
-                            <p className="subtitle">
-                                {data['course_code']}
-                            </p>
-                            
-                        </div>
-                        <span className="trailing">
-                            
-                        </span>
-                    </div>
-                </button>
+                <CourseTile isSelected={data['uuid'] === course.uuid}  uuid={data['uuid']} name={data['course_name']} code={data['course_code']} onClick={() => handleSelectCourse(data['uuid'])} />
             </>
         )
     })
@@ -201,58 +191,9 @@ export default function StaffCoursePage() {
         });
     }
 
-    function handleFormChange(event) {
-        
-        const fieldName = event.target.name;
-        const fieldValue = event.target.value;
-
-        if(fieldName === 'courseName') {
-            setCourse( values => ({...values, name: fieldValue}))
-        }else if(fieldName === 'courseCode') {
-            setCourse( values => ({...values, code: fieldValue }))
-        }else if(fieldName === 'courseDescription') {
-            setCourse( values => ({...values, description: fieldValue}))
-        }
-        
-        console.log(course)
-    }
-
-    let [courseCycles, setCourseCycles] = useState({
-        items: [], isLoading: true
-    });
-
-    let [courseCycle, setCourseCycle] = useState({
-        cycle: null,
-        courseId: null,
-        programmeId: null,
-        semesterId: null
-    })
-
-    useEffect(()=> {
-
-        if(courseCycles.isLoading & course.uuid != null) {
-            fetch(REST_API_BASE_URL+"/api/v1/courses/"+course.uuid+"/cycles")
-            .then(resp => {
-                if (resp.status === 200) {                    
-                    return resp.json()
-                } else {
-                    console.log("Status: " + resp.status)
-                    return Promise.reject("server")
-                }
-            })
-            .then(json => {
-                console.log(json)
-                setCourseCycles({
-                    items: json,
-                    isLoading: false
-                })
-            });
-        }
-    })  
-
     const sideBar =  isSideBarClosed  ? "secondary-sidebar closed": "secondary-sidebar";
     
-    let [sidebarView, setSideBarView] = useState("enrollment")
+    let [sidebarView, setSideBarView] = useState("details")
 
     function toggleSideBarTab(viewName) {
         setSideBarView(viewName);
@@ -277,7 +218,7 @@ export default function StaffCoursePage() {
     })
 
     useEffect(() => {
-        if(!sessions.isLoading && programmes.selected != null) {
+        if(!sessions.isLoading && programmes.selected != '') {
             fetch(REST_API_BASE_URL+"/api/v1/sessions/programme/"+programmes.selected)
             .then(res=> res.json())
             .then(json => {
@@ -289,7 +230,7 @@ export default function StaffCoursePage() {
             });
         }
 
-        if(!semesters.isLoading && sessions.selected != null) {
+        if(!semesters.isLoading && sessions.selected != '') {
             fetch(REST_API_BASE_URL+"/api/v1/semesters/session/"+sessions.selected)
             .then(res=> res.json())
             .then(json => {
@@ -387,16 +328,23 @@ export default function StaffCoursePage() {
         
     }
 
+    
+
     return (
         <>
             <div className="page">
                 <div className="page-container">
                     <section className="page-section">
                         <form className="form-section-group" >
-                            <input type="text" name="searchCourse" id="searchSourceField" />
+                            <div className="form-group-row">
+                                <input type="text" value={searchValue} onChange={handleSearchFieldUpdate} name="searchCourse" id="searchSourceField" />
+                                <input type="reset" hidden={searchValue.length == 0} value="Clear" />
+                                <input type="submit" name="addCourseButton" id="" value={"New Course"} />
+                            </div>
+                            
                         </form>
                         <form action="">
-                            <input type="submit" name="addCourseButton" id="" />
+                            
                         </form>
                     </section>
                     <section className="page-section">
@@ -416,7 +364,7 @@ export default function StaffCoursePage() {
                     </div>
                 </>
                 <div className="container">
-                    <SideBarView/>         
+                    {SideBarView()}       
                 </div>
             </div>
         </>
@@ -461,12 +409,31 @@ export default function StaffCoursePage() {
             return <EnrollmentSideBarView/>
         }else if(sidebarView == "lecturers") {
             return <LecturersSideBarView/>
+        }else if(sidebarView == "schedule") {
+            return <LecturersSideBarView/>
         }
 
         return <></>
     }
 
     function DetailsSideBarView() {
+
+        function handleFormChange(event) {
+        
+            const fieldName = event.target.name;
+            const fieldValue = event.target.value;
+    
+            if(fieldName === 'courseName') {
+                setCourse( values => ({...values, name: fieldValue}))
+            }else if(fieldName === 'courseCode') {
+                setCourse( values => ({...values, code: fieldValue }))
+            }else if(fieldName === 'courseDescription') {
+                setCourse( values => ({...values, description: fieldValue}))
+            }
+            
+            console.log(course)
+        }
+
         return <div className="wrap-forms">
             <form className="form-sidebar-group" onSubmit={course.uuid != null ? handleUpdateCourse : handleAddCourse} onReset={handleResetForm}>
 
@@ -493,7 +460,7 @@ export default function StaffCoursePage() {
 
         useEffect(() => {
 
-            if(programmes.selected != null && semesters.selected != null && !enrollments.isLoading) {
+            if(programmes.selected != null && semesters.selected != '' && !enrollments.isLoading) {
                 fetch(REST_API_BASE_URL+"/api/v1/courses/"+course.uuid+"/"+programmes.selected+"/"+semesters.selected+"/enroll")
                 .then(resp => {
                     if (resp.status === 200) {
@@ -523,52 +490,18 @@ export default function StaffCoursePage() {
             
         })
 
-        function handleStudentClick() {
-
-        }
-
-        function getStudentDetails(uuid) {
-            
-        }
-
-        function getDepartmentDetails(uuid) {
-
-        }
-
         const students = enrollments.items.map( data => {
 
-            let classes = "selectable-tile"
-            if(data['uuid'] === course.uuid) {
-                classes = "selectable-tile selected"
-            }
             return (
                 <>
-                    <button key={data['uuid']} className={classes} name="itemClick" id="" onClick={() => handleSelectCourse(data['uuid'])} value={data['uuid']}>
-                        <div className="list-tile" >
-                            <span className="leading">
-                                <i className="bi-person"></i>
-                            </span>
-                            <div className="body">
-                                <h6 className="title">
-                                    {data['first_name']} {data['last_name']} 
-                                </h6>
-                                <p className="subtitle">
-                                    {data['department_name']}
-                                </p>
-                                
-                            </div>
-                            <span className="trailing">
-                                
-                            </span>
-                        </div>
-                    </button>
+                    <StudentTile uuid={data['uuid']} first_name={data['first_name']} last_name={data['last_name']} department_name={data['department_name']}/>
                 </>
             )
         })
 
         if(enrollments.isLoading && enrollments.items.length < 1) {
             return <>
-            <div>
+            <div style={{width: 100+"%"}}>
                 {CourseCycleSelectionComponent()}
                 <div className="sidebar-listview">
                     <p>No Students Have Enrolled For This Cycle Yet</p>
@@ -579,11 +512,17 @@ export default function StaffCoursePage() {
         }
 
         return <>
-            <div>
+            <div style={{width: 100+"%"}}>
                 {CourseCycleSelectionComponent()}
                 <div className="sidebar-listview">
                     {students}
                 </div>
+                <form action="#" className="form-sidebar-group">
+                    <div className="form-group-row">
+                        <input type="text" name="studentIDField" id="" />
+                        <input type="submit" disabled={true} value="enrollStudent" />
+                    </div>
+                </form>
             </div>
             
         </>
@@ -601,7 +540,7 @@ export default function StaffCoursePage() {
 
         useEffect(() => {
 
-            if(programmes.selected != null && semesters.selected != null && !assignedLecturers.isLoading) {
+            if(programmes.selected != null && semesters.selected != '' && !assignedLecturers.isLoading) {
                 fetch(REST_API_BASE_URL+"/api/v1/courses/"+course.uuid+"/"+programmes.selected+"/"+semesters.selected+"/teachers")
                 .then(resp => {
                     if (resp.status === 200) {
@@ -619,11 +558,13 @@ export default function StaffCoursePage() {
                             items: json['staff'],
                             isLoading: true
                         })
+                    }else {
+                        setAssignedLecturers({
+                            items: [],
+                            isLoading: true
+                        })
                     }
-                    setAssignedLecturers({
-                        items: [],
-                        isLoading: true
-                    })
+                    
                 });
             }
             
@@ -637,32 +578,33 @@ export default function StaffCoursePage() {
             }
             return (
                 <>
-                    <button key={data['uuid']} className={classes} name="itemClick" id="" onClick={() => handleSelectCourse(data['uuid'])} value={data['uuid']}>
+                    <div key={data['uuid']} className="student-tile" name="itemClick" id="" onClick={() => handleSelectCourse(data['uuid'])} value={data['uuid']}>
                         <div className="list-tile" >
                             <span className="leading">
-                                <i className="bi-journal"></i>
+                                <i className="bi-person"></i>
                             </span>
                             <div className="body">
                                 <h6 className="title">
-                                    {data['uuid']}
+                                    {data['first_name']} {data['last_name']} 
                                 </h6>
                                 <p className="subtitle">
-
+                                    {data['is_supervisor'] ? "Supervisor": ''}
                                 </p>
                                 
                             </div>
                             <span className="trailing">
-                                
+                                <i className="bi-pen action--edit"></i>
+                                <i className="bi-trash action--delete"></i>
                             </span>
                         </div>
-                    </button>
+                    </div>
                 </>
             )
         })
 
         if(assignedLecturers.isLoading && assignedLecturers.items.length < 1) {
             return <>
-            <div>
+            <div style={{width: 100+"%"}}>
                 {CourseCycleSelectionComponent()}
                 <div className="sidebar-listview">
                     <p className="noItemsText">No Staff Has Been Assigned To This Cycle Yet</p>
@@ -673,7 +615,7 @@ export default function StaffCoursePage() {
         }
 
         return <>
-            <div>
+            <div style={{width: 100+"%"}}>
                 {CourseCycleSelectionComponent()}
                 <div className="sidebar-listview">
                     {staff}
@@ -683,5 +625,104 @@ export default function StaffCoursePage() {
         </>
         
         
+    }
+
+    function ScheduleSideBarView() {
+
+        function handleFormChange(event) {
+        
+            const fieldName = event.target.name;
+            const fieldValue = event.target.value;
+    
+            if(fieldName === 'courseName') {
+                setCourse( values => ({...values, name: fieldValue}))
+            }else if(fieldName === 'courseCode') {
+                setCourse( values => ({...values, code: fieldValue }))
+            }else if(fieldName === 'courseDescription') {
+                setCourse( values => ({...values, description: fieldValue}))
+            }
+            
+            console.log(course)
+        }
+
+        let [assignedLecturers, setAssignedLecturers] = useState({
+            items: [],
+            selected: '',
+            isLoading: false
+        })
+
+        useEffect(() => {
+
+            if(programmes.selected != null && semesters.selected != '' && !assignedLecturers.isLoading) {
+                fetch(REST_API_BASE_URL+"/api/v1/courses/"+course.uuid+"/"+programmes.selected+"/"+semesters.selected+"/teachers")
+                .then(resp => {
+                    if (resp.status === 200) {
+                        
+                        return resp.json()
+                    } else {
+                        console.log("Status: " + resp.status)
+                        return Promise.reject("server")
+                    }
+                })
+                .then(json => {
+                    console.log(json)
+                    if(json['staff']){
+                        setAssignedLecturers({
+                            items: json['staff'],
+                            isLoading: true
+                        })
+                    }else {
+                        setAssignedLecturers({
+                            items: [],
+                            isLoading: true
+                        })
+                    }
+                    
+                });
+            }
+            
+        })
+
+        const staff = assignedLecturers.items.map( data => {
+
+            let classes = "selectable-tile"
+            if(data['uuid'] === course.uuid) {
+                classes = "selectable-tile selected"
+            }
+            return (
+                <>
+                    <div key={data['uuid']} className="student-tile" name="itemClick" id="" onClick={() => handleSelectCourse(data['uuid'])} value={data['uuid']}>
+                        <div className="list-tile" >
+                            <span className="leading">
+                                <i className="bi-person"></i>
+                            </span>
+                            <div className="body">
+                                <h6 className="title">
+                                    {data['first_name']} {data['last_name']} 
+                                </h6>
+                                <p className="subtitle">
+                                    {data['is_supervisor'] ? "Supervisor": ''}
+                                </p>
+                                
+                            </div>
+                            <span className="trailing">
+                                <i className="bi-pen action--edit"></i>
+                                <i className="bi-trash action--delete"></i>
+                            </span>
+                        </div>
+                    </div>
+                </>
+            )
+        })
+
+        return <>
+            <div style={{width: 100+"%"}}>
+                {CourseCycleSelectionComponent()}
+                <div className="sidebar-listview">
+                    {staff}
+                </div>
+            </div>
+            
+        </>
     }
 }

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
-import { NotificationContext } from "../contexts/NotificationContex";
+import { AuthContext } from "../../contexts/AuthContext";
+import { NotificationContext } from "../../contexts/NotificationContex";
 
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API
 

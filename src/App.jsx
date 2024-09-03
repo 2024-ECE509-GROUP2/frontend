@@ -1,11 +1,10 @@
 import { useState } from "react";
+import AppRoute from "./AppRoute";
+import NotificationBar from "./components/common/Notification";
 import { AuthContext } from "./contexts/AuthContext";
-
+import { NotificationContext } from "./contexts/NotificationContex";
 import './styles/bootstrap.css';
 import './styles/root.css';
-import AppRoute from "./AppRoute";
-import { NotificationContext } from "./contexts/NotificationContex";
-import NotificationBar from "./components/custom/Notification";
 
 function App() {
     const [user, setUser] = useState({

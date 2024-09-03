@@ -1,12 +1,12 @@
 import React, { useContext, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../contexts/AuthContext";
+import { AuthContext } from "../../contexts/AuthContext";
 
-import "../styles/dashboard.css"
-import TimetableWeek from "../components/custom/TimetableWeekComponent";
-import TimetableClass from "../components/custom/TimetableClassComponent";
-import DashboardAssignmentTile from "../components/custom/DashboardAssignmentTile";
+import "../../styles/dashboard.css"
+import TimetableWeek from "../../components/custom/TimetableWeekComponent";
+import TimetableClass from "../../components/custom/TimetableClassComponent";
+import DashboardAssignmentTile from "../../components/custom/DashboardAssignmentTile";
 
 export default function StaffDashboard() {
 
