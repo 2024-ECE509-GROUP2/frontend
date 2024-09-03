@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    environment: github-pages
 
     steps:
       - name: Checkout repo
@@ -21,7 +22,10 @@ jobs:
         uses: bahmutov/npm-install@v1
 
       - name: Build project
-        run: npm run build
+        run: |
+          echo " Building..."
+          echo " BACKEND_REST_API_URL=${{ secrets.VITE_REST_API }}"
+          npm run build
         env:
           VITE_REST_API: ${{ secrets.VITE_REST_API }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
