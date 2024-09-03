@@ -17,7 +17,7 @@ export default function SchoolSessionPage() {
 
     if(auth.user == null) {
         useEffect(() => {
-            navigate("/");
+            navigate(BASE_URL+"/");
         })
     } 
 

@@ -14,7 +14,7 @@ export default function DepartmentsListPage() {
     const auth = useContext(AuthContext)
 
     if(auth.user == null) {
-        navigate('/', {replace: true})
+        navigate(BASE_URL+'/', {replace: true})
     }
 
     // Set Initail State to be Empty
@@ -82,12 +82,12 @@ export default function DepartmentsListPage() {
     function addDepartment(event) {
         event.preventDefault();
 
-        navigate('/faculty/'+uuid+'/addDepartment');
+        navigate(BASE_URL+'/faculty/'+uuid+'/addDepartment');
     }
 
     // This functions handle the effect when the edit button is clicked
     function editDepartment(value) {
-        navigate('/faculty/'+uuid+'/edit/'+value);
+        navigate(BASE_URL+'/faculty/'+uuid+'/edit/'+value);
     }
 
     // This functions handle the request when the delete button is clicked

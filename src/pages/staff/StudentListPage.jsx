@@ -36,7 +36,7 @@ export default function StudentListPage() {
 
     if(auth.user == null) {
         useEffect(() => {
-            navigate("/");
+            navigate(BASE_URL+"/");
         })
     }
 

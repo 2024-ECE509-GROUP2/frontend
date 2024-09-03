@@ -12,7 +12,7 @@ export default function EditDepartmentPage() {
     const auth = useContext(AuthContext)
 
     if(auth.user == null) {
-        navigate('/',)
+        navigate(BASE_URL+'/',)
     }
 
     // Get data from route (url)

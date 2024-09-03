@@ -12,7 +12,7 @@ export default function AddDepartmentPage() {
     const auth = useContext(AuthContext)
 
     if(auth.user == null) {
-        navigate('/', {replace: true})
+        navigate(BASE_URL+'/', {replace: true})
     }
 
     let {uuid} = useParams();

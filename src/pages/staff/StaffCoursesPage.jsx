@@ -15,7 +15,7 @@ export default function StaffCoursePage() {
 
     if(auth.user == null) {
         useEffect(() => {
-            navigate("/");
+            navigate(BASE_URL+"/");
         })
     }
 

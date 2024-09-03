@@ -50,70 +50,73 @@ export default function AppRoute() {
         //
         paths =
             <>
-                <Route path="/dashboard" element={<StaffDashboard />} />
-                <Route path="/students">
+                <Route path="dashboard" element={<StaffDashboard />} />
+                <Route path="students">
                     <Route path="enroll" element={<AddStudentPage />} />
                     <Route path=":uuid" element={<EditStudentProfile/>}/>
                     <Route index element={<StudentListPage/>}/>
                 </Route>
-                <Route path="/faculty">
+                <Route path="faculty">
                     <Route index element={<FacultyListPage />} />
                     <Route path="add" element={<AddFacultyPage />} />
                     <Route path=":uuid" element={<DepartmentsListPage/>}/>
                     <Route path=":uuid/addDepartment" element={<AddDepartmentPage/>}/>
                     <Route path=":uuid/edit/:edit" element={<EditDepartmentPage/>}/>
                 </Route>
-                <Route path="/school">
+                <Route path="school">
                     <Route index element={<SchoolCalenderPage />} />
                     <Route path="calender" element={<SchoolCalenderPage/>} />
                     <Route path="sessions" element={<SchoolSessionPage/>} />
                     <Route path="semesters" element={<SchoolSemestersPage/>} />
                     <Route path="programmes" element={<StaffProgrammePage/>} />
                 </Route>
-                <Route path="/schedule" element={<StaffSchedulePage/>} />
-                <Route path="/courses" element={<StaffCoursePage/>} />
+                <Route path="schedule" element={<StaffSchedulePage/>} />
+                <Route path="courses" element={<StaffCoursePage/>} />
             </>
     }else {
         paths = <>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/schedule" element={<SchedulePage />} />
-                <Route path="/classroom" element={<Classroom />} />
-                <Route path="/courses" element={<CoursesPage />} />
-                <Route path="/materials" element={<MaterialsPage />} />
-                <Route path="/assignments" element={<AssignmentsPage />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="schedule" element={<SchedulePage />} />
+                <Route path="classroom" element={<Classroom />} />
+                <Route path="courses" element={<CoursesPage />} />
+                <Route path="materials" element={<MaterialsPage />} />
+                <Route path="assignments" element={<AssignmentsPage />} />
             </>
     }
 
     const routes = createBrowserRouter(
         createRoutesFromElements(
             <>
-                <Route path="*" element={<NotFound/>} errorElement={<ErrorPage/>}/>
-                <Route path="/" element={<Login /> } errorElement={<ErrorPage/>} />
-                <Route 
+                <Route path="/frontend"> {/* This should make needed adjustments for our routes */}
+                    
+                    <Route index element={<Login />} errorElement={<ErrorPage />} />
+                    <Route
 
-                    loader={
-                        ()=> {
-                            if(auth.user == null) {
-                                return redirect('/')
+                        loader={
+                            () => {
+                                if (auth.user == null) {
+                                    return redirect('/')
+                                }
+
+                                return null
                             }
-
-                            return null
                         }
-                    }
-                
-                    element={
-                        <section className="layout">
-                            <SideBar />
-                            <Outlet />
-                        </section>
-                    }
 
-                    errorElement={<ErrorPage/>}
-                >
-                    
-                    {paths}
-                    
+                        element={
+                            <section className="layout">
+                                <SideBar />
+                                <Outlet />
+                            </section>
+                        }
+
+                        errorElement={<ErrorPage />}
+                    >
+
+                        {paths}
+
+                    </Route>
                 </Route>
+                <Route path="*" element={<NotFound />} errorElement={<ErrorPage />} />
 
             </>
         )

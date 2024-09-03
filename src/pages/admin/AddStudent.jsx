@@ -12,7 +12,7 @@ export default function AddStudentPage() {
     const auth = useContext(AuthContext)
 
     if(auth.user == null) {
-        navigate('/', {replace: true})
+        navigate(BASE_URL+'/', {replace: true})
     }
 
     let [details, setProfile] = useState({

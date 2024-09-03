@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 import "../styles/login.css";
-import { REST_API_BASE_URL } from "../constants/BaseConfig";
+import { BASE_URL, REST_API_BASE_URL } from "../constants/BaseConfig";
 import { NotificationContext } from "../contexts/NotificationContex";
 
 
@@ -30,7 +30,7 @@ const Login = () => {
 
         auth.signin(user, () => {
 
-            navigate("/dashboard", { replace: true });
+            navigate(BASE_URL+"/dashboard", { replace: true });
         });
     }
 
@@ -69,7 +69,7 @@ const Login = () => {
                 }
 
                 auth.signin(user, () => {
-                    navigate("/dashboard", { replace: true });
+                    navigate(BASE_URL+"/dashboard", { replace: true });
                 });
             }
         )
@@ -89,7 +89,7 @@ const Login = () => {
 
         auth.signin(user, () => {
 
-            navigate("/dashboard", { replace: true });
+            navigate(BASE_URL+"/dashboard", { replace: true });
         });
     }
 
@@ -98,7 +98,7 @@ const Login = () => {
     }
 
     if (auth.user != null) {
-        navigate("/dashboard");
+        navigate(BASE_URL+"/dashboard");
     }
 
 

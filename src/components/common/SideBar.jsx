@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import { BASE_URL } from "../../constants/BaseConfig";
 
-function SideBarLink({to='/dashboard', displayText, subdirectories=[]}) {
+function SideBarLink({to=BASE_URL+'/dashboard', displayText, subdirectories=[]}) {
 
     let navigate = useNavigate();
     let location = useLocation();
@@ -52,7 +53,7 @@ function SideBarLink({to='/dashboard', displayText, subdirectories=[]}) {
     )
 }
 
-function SideBarSubLink({to='/dashboard', displayText}) {
+function SideBarSubLink({to=BASE_URL+'/dashboard', displayText}) {
 
     let navigate = useNavigate();
     let location = useLocation();
@@ -83,22 +84,22 @@ export default function SideBar() {
         links = 
             <>
                 <SideBarLink displayText={"Home"}/>
-                <SideBarLink to="/schedule" displayText={"Schedule"}/>     
-                <SideBarLink to="/students" displayText={"Students"}
+                <SideBarLink to={BASE_URL+"/schedule"} displayText={"Schedule"}/>     
+                <SideBarLink to={BASE_URL+"/students"} displayText={"Students"}
                     subdirectories={[
-                        { path: '/students/enroll', text: "Add Students" }
+                        { path: BASE_URL+'/students/enroll', text: "Add Students" }
                     ]}
                 />
-                <SideBarLink to="/faculty" displayText={"Faculty"}
+                <SideBarLink to={BASE_URL+"/faculty"} displayText={"Faculty"}
                     subdirectories={[
-                        { path: '/faculty/add', text: "Add Faculty" }
+                        { path: BASE_URL+'/faculty/add', text: "Add Faculty" }
                     ]}
                 />
-                <SideBarLink to="/school" displayText={"School"}
+                <SideBarLink to={BASE_URL+"/school"} displayText={"School"}
                     subdirectories={[
-                        { path: '/school/programmes', text: "Programmes" },
-                        { path: '/school/sessions', text: "Sessions" },
-                        { path: '/school/semesters', text: "Semesters" },
+                        { path: BASE_URL+'/school/programmes', text: "Programmes" },
+                        { path: BASE_URL+'/school/sessions', text: "Sessions" },
+                        { path: BASE_URL+'/school/semesters', text: "Semesters" },
                     ]}
                 />
             </>
@@ -107,11 +108,11 @@ export default function SideBar() {
         links = 
             <>
                 <SideBarLink displayText={"Home"}/>
-                <SideBarLink to="/schedule" displayText={"Schedule"}/>
-                <SideBarLink to="/classroom" displayText={"Classroom"}/>
-                <SideBarLink to="/courses" displayText={"Courses"}/>
-                <SideBarLink to="/materials" displayText={"Materials"}/>
-                <SideBarLink to="/assignments" displayText={"Assignments"}/>
+                <SideBarLink to={BASE_URL+"/schedule"} displayText={"Schedule"}/>
+                <SideBarLink to={BASE_URL+"/classroom"} displayText={"Classroom"}/>
+                <SideBarLink to={BASE_URL+"/courses"} displayText={"Courses"}/>
+                <SideBarLink to={BASE_URL+"/materials"} displayText={"Materials"}/>
+                <SideBarLink to={BASE_URL+"/assignments"} displayText={"Assignments"}/>
             </>
         ;
     }
@@ -120,7 +121,7 @@ export default function SideBar() {
         event.preventDefault();
 
         auth.logout(()=> {
-            navigate('/', {replace: true});
+            navigate(BASE_URL+'/', {replace: true});
         });
     }
 

@@ -17,9 +17,9 @@ export default function EditStudentProfile() {
     const auth = useContext(AuthContext)
 
     if(auth.user == null) {
-        navigate('/', {replace: true})
+        navigate(BASE_URL+'/', {replace: true})
     }else if(auth.user == null) {
-        navigate('/', {replace: true})
+        navigate(BASE_URL+'/', {replace: true})
     }
 
     let [profileImage, setProfileImage] = useState(null)

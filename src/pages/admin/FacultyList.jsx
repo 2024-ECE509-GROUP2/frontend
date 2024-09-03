@@ -27,7 +27,7 @@ export default function FacultyListPage() {
     // Like In every other page this is to check for the user authentication
     if(auth.user == null) {
         useEffect(() => {
-            navigate("/");
+            navigate(BASE_URL+"/");
         })
     }
 
@@ -67,7 +67,7 @@ export default function FacultyListPage() {
 
     function handleItemClick(uuid) {
 
-        navigate("/faculty/"+uuid)
+        navigate(BASE_URL+"/faculty/"+uuid)
     }
 
     const studentsTiles = faculites.items.map( data => {
