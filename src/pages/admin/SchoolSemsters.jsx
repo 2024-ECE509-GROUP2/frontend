@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { NotificationContext } from "../../contexts/NotificationContex";
 import TableList from "../../components/common/TableList";
-import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 
 export default function SchoolSemestersPage() {
 

@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { NotificationContext } from "../../contexts/NotificationContex";
 import '../../constants/FirebaseConfig';
-import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { NotificationContext } from "../../contexts/NotificationContex";
 import StudentTile from "../../components/custom/StudentTile";
-import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 import StudentTileButton from "../../components/custom/StudentTileButton";
 
 export default function StudentListPage() {

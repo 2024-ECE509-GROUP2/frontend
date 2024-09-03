@@ -3,7 +3,7 @@ import { NotificationContext } from "../../contexts/NotificationContex";
 import '../../constants/FirebaseConfig';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { profileImageRef } from "../../constants/FirebaseConfig";
-import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 
