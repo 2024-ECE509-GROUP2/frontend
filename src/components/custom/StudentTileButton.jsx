@@ -1,5 +1,8 @@
-export default function StudentTileButton({
+import { Avatar } from "primereact/avatar"
+
+export default function UserTileButton({
     uuid, first_name, last_name, department_name,
+    profileURL=null,
     isSelected=false, hasActions=false,
     onClick = () => {}, OnDelete= ()=> {}
 }) {
@@ -10,13 +13,31 @@ export default function StudentTileButton({
         classes = "selectable-tile selected"
     }
 
+    function ProfileImage({url=null}) {
+
+        if(url == null) {
+            return (
+                <Avatar icon="pi pi-user" size="xlarge" shape="circle" />
+            )
+        }
+
+        return (
+            <>
+                <div style={{maxWidth: 60+'px', maxHeight: 60+'px'}} className="profile-container">
+                    <img style={{maxWidth: 60+'px', maxHeight: 60+'px'}} src={url} />
+                </div>
+                
+            </>
+        )
+    }
+
     if(hasActions) {
         return (
             <>
                 <button key={uuid} className={classes} name="itemClick" id="" onClick={onClick} value={uuid}>
                     <div className="list-tile" >
                         <span className="leading">
-                            <i className="bi-person"></i>
+                            <ProfileImage url={profileURL}/>
                         </span>
                         <div className="body">
                             <h6 className="title">
@@ -41,7 +62,7 @@ export default function StudentTileButton({
             <button key={uuid} className={classes} name="itemClick" id="" onClick={onClick} value={uuid}>
                 <div className="list-tile" >
                     <span className="leading">
-                        <i className="bi-person"></i>
+                        <ProfileImage url={profileURL}/>
                     </span>
                     <div className="body">
                         <h6 className="title">

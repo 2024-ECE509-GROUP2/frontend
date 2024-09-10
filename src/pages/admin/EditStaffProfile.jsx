@@ -1,21 +1,17 @@
-import { useContext, useEffect, useState } from "react";
-import { NotificationContext } from "../../contexts/NotificationContex";
+import { useEffect, useState } from "react";
 import '../../constants/FirebaseConfig';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { profileImageRef } from "../../constants/FirebaseConfig";
-import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
-import { AuthContext } from "../../contexts/AuthContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Breadcrumb } from "rsuite";
 import BreadcrumbItem from "rsuite/esm/Breadcrumb/BreadcrumbItem";
 import BreadLink from "../../components/custom/BreadcrumbLink";
 
-export default function EditStudentProfile() {
+export default function EditStaffProfile() {
 
     let { uuid } = useParams();
-    let navigate = useNavigate();
-    const auth = useContext(AuthContext)
 
     let [profileImage, setProfileImage] = useState(null)
     let [isUploadingImage, toggleUploading] = useState(false)
@@ -26,7 +22,7 @@ export default function EditStudentProfile() {
         last_name: '',
         email: '',
         profileURL: null,
-        isStaff: false,
+        isStaff: true,
         shouldLoad: true
     })
 
@@ -122,12 +118,23 @@ export default function EditStudentProfile() {
     function updateProfileForm(event) {
         event.preventDefault()
 
+        console.log(
+            JSON.stringify({
+                'first_name': profile.first_name,
+                'last_name': profile.last_name,
+                'middle_name': profile.middle_name.length < 3 ? null: profile.middle_name,
+                'email': profile.email,
+                'profile_url': profile.profileURL,
+                'user_type': profile.isStaff ? 'staff' : 'student'
+            })
+        )
+
         fetch(REST_API_BASE_URL+'/api/v1/profile/'+uuid, {
             method: 'put',
             body: JSON.stringify({
                 'first_name': profile.first_name,
                 'last_name': profile.last_name,
-                'middle_name': profile.middle_name.length < 1 ? null: profile.middle_name,
+                'middle_name': profile.middle_name.length < 3 ? null: profile.middle_name,
                 'email': profile.email,
                 'profile_url': profile.profileURL,
                 'user_type': profile.isStaff ? 'staff' : 'student'
@@ -156,7 +163,7 @@ export default function EditStudentProfile() {
 
         if(url == null) {
             return (
-                <i className="bi-person" ></i>
+                <i className="pi pi-user" ></i>
             )
         }
 
@@ -177,19 +184,16 @@ export default function EditStudentProfile() {
                     <section className="page-section">
                         <Breadcrumb>
                             <BreadcrumbItem as={BreadLink} href="/">Home</BreadcrumbItem>
-                            <BreadcrumbItem as={BreadLink} href="/students">Students</BreadcrumbItem>
-                            <BreadcrumbItem >Edit Student Profile</BreadcrumbItem>
+                            <BreadcrumbItem as={BreadLink} href="/staff">Staff</BreadcrumbItem>
+                            <BreadcrumbItem >Edit Staff Profile</BreadcrumbItem>
                         </Breadcrumb>
                     </section>
                     <section className="page-section">
                         <form className="form-section-group" onSubmit={updateProfileForm} >
-                            <div className="form-group-row form-profile-group">
+                            <div style={{justifyContent: 'end'}} className="form-group-row">
                                 <ProfileImage url={profile.profileURL}/>
                                 <div>
 
-                                    {/* <label htmlFor="fileUpload" hidden={profileImage != null} className="custom-file-upload">
-                                        Upload Image
-                                    </label> */}
                                     <input type="file" name="fileUpload" id="profilePicker" onChange={uploadFile}/>
                                     
                                     <span>
@@ -223,30 +227,6 @@ export default function EditStudentProfile() {
                         
                         <form className="form-group-row">
                             
-                            
-                        </form>
-                    </section>
-                    {/* This section is for students only */}
-                    <section className="page-section">
-                        <form className="form-section-group" >
-                            <div className="form-group-row">
-                                <label htmlFor="departmentField">Department</label>
-                                <input type="text" disabled={true} name="firstNameField" id="" />
-                                <label htmlFor="sessionField">Session Started:</label>
-                                <input type="text" disabled={true} name="lastNameField" id="" />
-                            </div>
-                            
-                        </form>
-                    </section>
-                    {/* This section is for staff memembers only */}
-                    <section className="page-section">
-                        <form className="form-section-group" >
-                            <div className="form-group-row">
-                                <label htmlFor="departmentField">Department</label>
-                                <input type="text" disabled={true} name="firstNameField" id="" />
-                                <label htmlFor="sessionField">Session Started:</label>
-                                <input type="text" disabled={true} name="lastNameField" id="" />
-                            </div>
                             
                         </form>
                     </section>

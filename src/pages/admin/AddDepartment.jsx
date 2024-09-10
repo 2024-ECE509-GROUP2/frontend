@@ -4,6 +4,9 @@ import '../../constants/FirebaseConfig';
 import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { Breadcrumb } from "rsuite";
+import BreadcrumbItem from "rsuite/esm/Breadcrumb/BreadcrumbItem";
+import BreadLink from "../../components/custom/BreadcrumbLink";
 
 export default function AddDepartmentPage() {
 
@@ -122,7 +125,12 @@ export default function AddDepartmentPage() {
             <div className="page">
                 <div className="page-container">
                     <section className="page-section">
-                        <h2>Create Department</h2>
+                        <Breadcrumb>
+                            <BreadcrumbItem as={BreadLink} href="/">Home</BreadcrumbItem>
+                            <BreadcrumbItem as={BreadLink} href="/faculty">All Faculties</BreadcrumbItem>
+                            <BreadcrumbItem as={BreadLink} href={"/faculty/"+uuid}>{faculty.faculty_name}</BreadcrumbItem>
+                            <BreadcrumbItem >Add Department</BreadcrumbItem>
+                        </Breadcrumb>
                     </section>
                     <section className="page-section">
                         <form className="form-section-group" onSubmit={addDepartmentForm} >

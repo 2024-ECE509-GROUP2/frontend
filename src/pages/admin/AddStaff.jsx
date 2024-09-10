@@ -1,20 +1,20 @@
 import { useContext, useEffect, useState } from "react";
-import { NotificationContext } from "../../contexts/NotificationContex";
-import '../../constants/FirebaseConfig';
-import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
-import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
+
 import { Breadcrumb } from "rsuite";
 import BreadcrumbItem from "rsuite/esm/Breadcrumb/BreadcrumbItem";
 import BreadLink from "../../components/custom/BreadcrumbLink";
 
-export default function AddStudentPage() {
+import { REST_API_BASE_URL } from "../../constants/BaseConfig";
+import '../../constants/FirebaseConfig';
+import { AuthContext } from "../../contexts/AuthContext";
+import { NotificationContext } from "../../contexts/NotificationContex";
 
-    let notifer = useContext(NotificationContext);
-    let navigate = useNavigate();
-    const auth = useContext(AuthContext)
+export default function AddStaffPage() {
 
+    //  Our State Variables
     let [formFields, setProfile] = useState({
         first_name: '',
         middle_name: '',
@@ -22,7 +22,7 @@ export default function AddStudentPage() {
         email: '',
         profileURL: null,
         department: null,
-        isStaff: false,
+        isStaff: true,
         shouldLoad: true
     })
 
@@ -41,9 +41,7 @@ export default function AddStudentPage() {
             setProfile(values=>({...values, email: fieldValue}))
         }
 
-        if(fieldName == 'selectProgramme') {
-            selectProgrammes(values=>({...values, selected: fieldValue}))
-        }else if(fieldName == 'selectFaculty') {
+        if(fieldName == 'selectFaculty') {
             setFaculties(values=>({...values, selected: fieldValue, shouldLoad: true}))
         }else if(fieldName == 'selectDepartment') {
             setDepartments(values=>({...values, selected: fieldValue}))
@@ -52,11 +50,11 @@ export default function AddStudentPage() {
 
     // Handle the form when submitted
     // This 
-    function addStudentForm(event) {
+    function addStaffForm(event) {
         event.preventDefault()
 
         // Makes request to API
-        fetch(REST_API_BASE_URL+'/api/v1/students/', {
+        fetch(REST_API_BASE_URL+'/api/v1/staff/', {
             method: 'post',
             body: JSON.stringify({
                 'first_name': formFields.first_name,
@@ -65,8 +63,6 @@ export default function AddStudentPage() {
                 'email': formFields.email,
                 
                 'department': deparments.selected,
-                'department_joined': deparments.selected,
-                'programme': programmes.selected
             })
         })
         .then( response => {
@@ -83,12 +79,12 @@ export default function AddStudentPage() {
             // This part only runs if the request was succesfull
             console.log(json)
             setProfile( values => ({...values, shouldLoad: true}))
-            toast.success("Student Created")
+            toast.success("Staff Added")
         })
         .catch( reason => {
             //  This part is to 'catch' the error if any occur
             console.log('Promised rejected due to:'+reason)
-            toast.error("Profile Update Failed")
+            toast.error("Something Went Wrong")
         })
     }
 
@@ -96,11 +92,6 @@ export default function AddStudentPage() {
     // Now we get the data for the dropdown menus
 
     // State Varables to hold the values
-    let [programmes, selectProgrammes] = useState({
-        items: [],
-        selected: null,
-        shouldLoad: true
-    })
 
     let [faculties, setFaculties] = useState({
         items: [],
@@ -115,30 +106,6 @@ export default function AddStudentPage() {
     })
 
     useEffect( () => {
-
-        if(programmes.shouldLoad) {
-            fetch(REST_API_BASE_URL+'/api/v1/programme/', {
-            })
-            .then( response => {
-                if(response.status == 200) {
-                    return response.json()
-                }else {
-                    console.log("Status: " + response.status)
-                    return Promise.reject("server")
-                }
-            })
-            .then( json => {
-                console.log(json)
-                selectProgrammes({
-                    items: json,
-                    selected: null,
-                    shouldLoad: false
-                })
-            })
-            .catch( reason => {
-                console.log('Promised rejected due to:'+reason)
-            })
-        }
 
         // We don't it fetching every frame
         if(faculties.shouldLoad){
@@ -199,15 +166,6 @@ export default function AddStudentPage() {
         })
     })
 
-    // For the items on the dropdown to select the programme
-    const optionsForProgrammes = programmes.items.map( data => {
-        return (
-            <>
-                <option value={data['uuid']}>{data['programme_label']}</option>
-            </>
-        )
-    })
-
     // For the items on the dropdown to select the faculty
     const optionsForFaculty = faculties.items.map( data => {
         return (
@@ -217,7 +175,7 @@ export default function AddStudentPage() {
         )
     })
 
-    // For the items on the dropdown to select the faculty
+    // For the items on the dropdown to select the departments
     const optionsForDeparments = deparments.items.map( data => {
         return (
             <>
@@ -233,13 +191,13 @@ export default function AddStudentPage() {
                     <section className="page-section">
                         <Breadcrumb>
                             <BreadcrumbItem as={BreadLink} href="/">Home</BreadcrumbItem>
-                            <BreadcrumbItem as={BreadLink} href="/students">All Students</BreadcrumbItem>
-                            <BreadcrumbItem >Enroll Student</BreadcrumbItem>
+                            <BreadcrumbItem as={BreadLink} href="/staff">Staff</BreadcrumbItem>
+                            <BreadcrumbItem >Enroll Staff</BreadcrumbItem>
                         </Breadcrumb>
                     </section>
                     <section className="page-section">
-                        <form className="form-section-group" onSubmit={addStudentForm} >
-                            <div className="form-group-row">
+                        <form className="form-section-group" onSubmit={addStaffForm} >
+                        <div className="form-group-row">
                                 <h5>Personal Details</h5>
                             </div>
                             <div className="form-group-row">
@@ -260,13 +218,6 @@ export default function AddStudentPage() {
                             </div>
                             <div className="form-group-row">
                                 <h5>School Details</h5>
-                            </div>
-                            <div className="form-group-row">
-                                <label htmlFor="selectProgramme">Select Programme</label>
-                                <select className="" name="selectProgramme" id="selectProgrammeOptions" value={programmes.selected} onChange={handleFormUpdate}>
-                                    <option value=""></option>
-                                    {optionsForProgrammes}
-                                </select>
                             </div>
                             <div className="form-group-row">
                                 <label htmlFor="selectFaculty">Select Faculty</label>

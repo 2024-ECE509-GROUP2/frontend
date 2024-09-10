@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { AuthContext } from "../contexts/AuthContext";
 
 import "../styles/login.css";
 import { BASE_URL, REST_API_BASE_URL } from "../constants/BaseConfig";
-import { NotificationContext } from "../contexts/NotificationContex";
+import { toast } from "react-toastify";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 
 
 // Moved from /components/login/
@@ -12,100 +15,104 @@ import { NotificationContext } from "../contexts/NotificationContex";
 const Login = () => {
 
     let navigate = useNavigate();
-    let notifier = useContext(NotificationContext)
     let auth = useContext(AuthContext);
 
-    console.log(auth.user);
+    // The Form Data
+    // We'll use 'onChange' to update the values here
+    let [form, setForm] = useState({
+        userID: '',
 
-    let [userIDField, setUserField] = useState('')
+    })
 
+    // TODO: You need to click twice before it works. FIXED: problem came from loader function from router
     function handleSubmit(event) {
         event.preventDefault();
 
-        var user = {
-            id: 'sample1234',
-            firstname: "John",
-            lastname: "Ihyemi"
-        }
-
-        auth.signin(user, () => {
-
-            navigate(BASE_URL+"/dashboard", { replace: true });
-        });
-    }
-
-    function handleStudentLogin(event) {
-        event.preventDefault();
-
-        fetch(REST_API_BASE_URL+'/api/v1/login/', {
-            method: 'post',
-            body: JSON.stringify({
-                "id": 'u18/302001'
+        // Speacial Login For Admin (we will not leave it like this, just to make testing faster)
+        if(form.userID == 'admin') {
+            var user = {
+                id: 'admin',
+                firstname: 'Admin',
+                lastname: 'User',
+                isStaff: true
+            }
+    
+            auth.signin(user, () => {
+                navigate(BASE_URL+"/dashboard", { replace: true });
+                toast.success("Admin Secrect Unlock Login");
+            });
+        }else {
+            // Make request to api
+            fetch(REST_API_BASE_URL + '/api/v1/login/', {
+                method: 'post',
+                body: JSON.stringify({
+                    "id": form.userID
+                })
             })
-        })
-        .then( response => {
+                .then(response => {
 
-            if (response.status === 200) {
-                notifier.pushNotice("Login Successful", "", 'success')
-                
-                return response.json()
-            } else {
-                notifier.pushNotice("Login Failed", "", 'error')
+                    if (response.status === 200) {
 
-                console.log("Status: " + response.status)
-                return Promise.reject("server")
-            }
-            
-            
-        })
-        .then(
-            json => {
+                        return response.json();
+                    } else if (response.status === 400) {
 
-                var user = {
-                    id: json['uuid'],
-                    firstname: json['first_name'],
-                    lastname: json['last_name'],
-                    isStaff: json['user_type'] == "staff"
-                }
+                        return Promise.reject("not_found");
 
-                auth.signin(user, () => {
-                    navigate(BASE_URL+"/dashboard", { replace: true });
-                });
-            }
-        )
+                    } else {
+
+                        console.log("Status: " + response.status);
+                        return Promise.reject("server");
+                    }
+
+                })
+                .then(
+                    json => {
+
+                        var user = {
+                            id: json['uuid'],
+                            firstname: json['first_name'],
+                            lastname: json['last_name'],
+                            isStaff: json['user_type'] == "staff"
+                        }
+
+                        auth.signin(user, () => {
+                            navigate(BASE_URL + "/dashboard", { replace: true });
+                            toast.success("Login Successful");
+                        });
+
+
+                    }
+                ).catch(
+                    reason => {
+
+                        if (reason == 'not_found') {
+                            toast.error("Could Not Find User With That ID")
+                        } else {
+                            toast.error("Failed To Communicate With Server")
+                        }
+
+                    }
+                )
+        }
 
         
-    }
-
-    function handleStaffLogin(event) {
-        event.preventDefault();
-
-        var user = {
-            id: 'sample1234',
-            firstname: "John",
-            lastname: "Ihyemi",
-            isStaff: true
-        }
-
-        auth.signin(user, () => {
-
-            navigate(BASE_URL+"/dashboard", { replace: true });
-        });
     }
 
     function onFieldChange(event) {
-        
-    }
+        var fieldName = event.target.name
+        var fieldValue = event.target.value
 
-    if (auth.user != null) {
-        navigate(BASE_URL+"/dashboard");
+        if(fieldName == 'userField') {
+            setForm(value => ({...value, userID: fieldValue}))
+        }
     }
-
 
     return (
         <>
+            
             <div className="container">
-                <div className="left-side">
+
+                <div className=" col-6 left-side">
                     <h3 style={{ fontSize: "35px" }}>
                         Welcome Back to
                         <br />
@@ -116,35 +123,16 @@ const Login = () => {
                 </div>
 
                 <div className="right-side">
-                    <form id="loginform" onSubmit={handleSubmit}>
+                    <form style={{width: 90+'%', padding: 35+'px'}} id="loginform" className="" onSubmit={handleSubmit}>
+                        
                         <div className="form-group">
-                            <input type="ID" id="ID" value={userIDField} placeholder="Matriculation Number/Staff ID"/>
+                            <InputText type="text" name="userField" value={form.userID} onChange={onFieldChange} placeholder="Matriculation Number/Staff ID" />
                         </div>
                         <div className="form-group">
-                            <input type="ID" id="ID" placeholder="Password" />
+                            <InputText type="password" name="passwordField" placeholder="PIN" disabled={true} />
                         </div>
                         <div className="form-group">
-
-                            <div className="form-group-row">
-                                <input type="checkbox" id="keep-signed-in" />
-                                <span className="checkmark"></span>
-                                <label htmlFor="keep-signed-in" className="checkbox-container">
-                                    Keep me signed in until I sign out
-                                </label>
-                            </div>
-                            
-
-                            <button type="submit" onClick={handleStudentLogin} style={{ fontSize: "16px" }}>
-                                Student Sign In
-                            </button>
-                            <button type="submit" onClick={handleStaffLogin} style={{ fontSize: "16px" }}>
-                                Staff Sign In
-                            </button>
-                            <p style={{width: 100+'%'}}>
-                                <a href="" style={{ textAlign: "center" }}>
-                                    Forgot Password?
-                                </a>
-                            </p>
+                            <Button label="Login" />
                         </div>
                         
                     </form>

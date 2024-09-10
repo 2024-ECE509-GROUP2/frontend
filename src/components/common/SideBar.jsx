@@ -85,6 +85,11 @@ export default function SideBar() {
             <>
                 <SideBarLink displayText={"Home"}/>
                 <SideBarLink to={BASE_URL+"/schedule"} displayText={"Schedule"}/>     
+                <SideBarLink to={BASE_URL+"/staff"} displayText={"Staff"}
+                    subdirectories={[
+                        { path: BASE_URL+'/staff/add', text: "Add Staff Members" }
+                    ]}
+                /> 
                 <SideBarLink to={BASE_URL+"/students"} displayText={"Students"}
                     subdirectories={[
                         { path: BASE_URL+'/students/enroll', text: "Add Students" }
@@ -130,7 +135,8 @@ export default function SideBar() {
             <div className="dashboard-sidebar col-2 h-100 mb-0 mx-0 d-inline-flex align-items-center p-2 bg-dark text-white">
                 
                 <div className="logo d-block mx-0 text-center w-100">
-                    LMS-UNIPORT
+                    UNIPORT <br />
+                    Learning Portal
                 </div>
                 <div className="d-block w-100" id="style-3" style={{overflowY: 'auto', maxHeight: 55+'vh', }}>
                     <ul className="dashboard-sidebar-links">

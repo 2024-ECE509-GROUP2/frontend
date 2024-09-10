@@ -13,22 +13,26 @@ import StaffSchedulePage from "./pages/staff/StaffSchedulePage";
 import AssignmentsPage from "./pages/student/AssignmentsPage";
 import CoursesPage from "./pages/student/CoursesPage";
 
+import AddDepartmentPage from "./pages/admin/AddDepartment";
+import AddFacultyPage from "./pages/admin/AddFaculty";
+import AddStudentPage from "./pages/admin/AddStudent";
+import EditDepartmentPage from "./pages/admin/EditDepartment";
+import DepartmentsListPage from "./pages/admin/EditFaculty";
+import EditStudentProfile from "./pages/admin/EditStudentProfile";
+import FacultyListPage from "./pages/admin/FacultyList";
+import SchoolCalenderPage from "./pages/admin/SchoolCalender";
+import SchoolSemestersPage from "./pages/admin/SchoolSemsters";
+import SchoolSessionPage from "./pages/admin/SchoolSessions";
 import ErrorPage from "./pages/ErrorPage";
 import NotFound from "./pages/NotFound";
 import StaffProgrammePage from "./pages/staff/StaffProgrammePage";
-import SchoolSessionPage from "./pages/admin/SchoolSessions";
-import StudentListPage from "./pages/staff/StudentListPage";
+import StudentListPage from "./pages/admin/StudentListPage";
 import Classroom from "./pages/student/Classroom";
 import './styles/layout.css';
-import EditStudentProfile from "./pages/admin/EditStudentProfile";
-import AddStudentPage from "./pages/admin/AddStudent";
-import AddFacultyPage from "./pages/admin/AddFaculty";
-import DepartmentsListPage from "./pages/admin/EditFaculty";
-import FacultyListPage from "./pages/admin/FacultyList";
-import AddDepartmentPage from "./pages/admin/AddDepartment";
-import EditDepartmentPage from "./pages/admin/EditDepartment";
-import SchoolCalenderPage from "./pages/admin/SchoolCalender";
-import SchoolSemestersPage from "./pages/admin/SchoolSemsters";
+
+import AddStaffPage from "./pages/admin/AddStaff";
+import StaffListPage from "./pages/admin/StaffList";
+import EditStaffProfile from "./pages/admin/EditStaffProfile";
 
 export default function AppRoute() {
 
@@ -37,14 +41,6 @@ export default function AppRoute() {
 
     // We need to store the routes generated
     let paths = <></>;
-
-    
-
-    // if(auth.user == null) {
-    //     routes = <>
-    //         <R
-    //     </>
-    // }
 
     if(auth.isStaff) {
         //
@@ -55,6 +51,11 @@ export default function AppRoute() {
                     <Route path="enroll" element={<AddStudentPage />} />
                     <Route path=":uuid" element={<EditStudentProfile/>}/>
                     <Route index element={<StudentListPage/>}/>
+                </Route>
+                <Route path="staff">
+                    <Route path="add" element={<AddStaffPage />} />
+                    <Route path=":uuid" element={<EditStaffProfile/>}/>
+                    <Route index element={<StaffListPage/>}/>
                 </Route>
                 <Route path="faculty">
                     <Route index element={<FacultyListPage />} />
@@ -87,11 +88,13 @@ export default function AppRoute() {
     const routes = createBrowserRouter(
         createRoutesFromElements(
             <>
-                <Route path="/"> {/* 
-                
-                    This should make needed adjustments for our routes 
-                    (Not removing yet)
+                <Route path="/"> 
+                    {/* 
                     
+                        First We See Is Login Page
+
+                        The Error element will only show if there is an error.
+                        
                     */}
                     
                     <Route index element={<Login />} errorElement={<ErrorPage />} />
@@ -99,6 +102,8 @@ export default function AppRoute() {
 
                         loader={
                             () => {
+
+                                // If the user is not logged in, it will redirect them to the login page
                                 if (auth.user == null) {
                                     return redirect('/')
                                 }
@@ -121,6 +126,7 @@ export default function AppRoute() {
 
                     </Route>
                 </Route>
+                {/* If the path does not exist then show 404 page */}
                 <Route path="*" element={<NotFound />} errorElement={<ErrorPage />} />
 
             </>

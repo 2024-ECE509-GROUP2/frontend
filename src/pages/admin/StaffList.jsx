@@ -1,46 +1,44 @@
-import { useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import { NotificationContext } from "../../contexts/NotificationContex";
-import { BASE_URL, REST_API_BASE_URL } from "../../constants/BaseConfig";
+import StudentTile from "../../components/custom/StudentTile";
+import { BASE_URL,REST_API_BASE_URL } from "../../constants/BaseConfig";
 import UserTileButton from "../../components/custom/StudentTileButton";
 
-export default function FacultyListPage() {
+export default function StaffListPage() {
 
     let navigate = useNavigate()
+
     let auth = useContext(AuthContext)
     let notifier = useContext(NotificationContext)
 
-    // I know how faculites is spelt. 
-    let [faculites, updateFacultiesList] = useState({
+    let [current_staff, setStaffDetails] = useState({
+        uuid : '',
+        student_id : '',
+        department : '',
+        first_name: '',
+        last_name: '',
+        profile_url: null,
+        department_joined : '',
+        session_joined : '',
+    })
+
+    let [staff, setStaff] = useState({
         items: [],
-        shouldLoad: true
+        shouldFetchitems: true
     })
 
     let [searchField, setSearchValue] = useState('')
 
-    // Each time the user types on the search the result will update
     function handleSearchFieldUpdate(event) {
         setSearchValue(event.target.value)
     }
 
-    // Like In every other page this is to check for the user authentication
-    if(auth.user == null) {
-        useEffect(() => {
-            navigate(BASE_URL+"/");
-        })
-    }
-
-    // Load the data for the Page
-    // 
     useEffect(()=> {
-        if(faculites.shouldLoad) {
-
-            // Makes the request to the backend
-            fetch(REST_API_BASE_URL+"/api/v1/faculty/")
+        if(staff.shouldFetchitems) {
+            fetch(REST_API_BASE_URL+"/api/v1/staff/")
             .then(resp => {
-                // Check if the response is successful
-                // 200 means that this request was succesfull
                 if (resp.status === 200) {
                     
                     return resp.json()
@@ -48,36 +46,30 @@ export default function FacultyListPage() {
                     console.log("Status: " + resp.status)
                     return Promise.reject("server")
                 }
-            }, reason => {
-                return JSON.stringify({
-                    'message' : reason,
-                })        
-            }).then(json => {
+            })
+            .then(json => {
                 console.log(json)
-                updateFacultiesList({
+                setStaff({
                     items: json,
-                    shouldLoad: false
+                    shouldFetchItems: false
                 })
-            })
-            .catch( reason => {
-                console.log(reason)
-            })
+            });
         }
     })
 
     function handleItemClick(uuid) {
 
-        navigate(BASE_URL+"/faculty/"+uuid)
+        navigate(BASE_URL+'/staff/'+uuid)
     }
 
-    const studentsTiles = faculites.items.map( data => {
+    const staffTiles = staff.items.map( data => {
+
         return (
             <>
-                <UserTileButton uuid={data['uuid']} onClick={() => handleItemClick(data['uuid'])} first_name={data['faculty_name']} last_name={data['last_name']} department_name={data['department_name']}/>
+                <UserTileButton uuid={data['uuid']} profileURL={data['profile_url']} onClick={() => handleItemClick(data['uuid'])} first_name={data['first_name']} last_name={data['last_name']} department_name={data['department_name']}/>
             </>
         )
     })
- 
 
     return(
         <>
@@ -88,19 +80,20 @@ export default function FacultyListPage() {
                             <div className="form-group-row">
                                 <input type="text" value={searchField} onChange={handleSearchFieldUpdate} name="searchCourse" id="searchSourceField" />
                                 <input type="reset" hidden={searchField.length == 0} value="Clear" />
+                                <input type="submit" name="addStudentButton" id="" value={"Enroll New Student"} onClick={() =>{toggleSideBarTab("details")}}/>
                             </div>
                             
                         </form>
                     </section>
                     <section className="page-section">
                         <div className="section-list">
-                            {studentsTiles}
+                            {staffTiles}
                         </div>
                     </section>
                 </div>
             </div>
-            
         </>
     )
 
+   
 }
