@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 
 import "../styles/dashboard.css";
-import "../styles/bootstrap.css";
+// removed bootstrap.css, replaced with primereact.css
 import TimetableWeek from "../components/custom/TimetableWeekComponent";
 import TimetableClass from "../components/custom/TimetableClassComponent";
 import DashboardAssignmentTile from "../components/custom/DashboardAssignmentTile";
@@ -16,9 +16,9 @@ export default function Dashboard(content) {
     let navigate = useNavigate();
     let auth = useContext(AuthContext);
 
-    console.log(auth.user);
+    console.log(auth.uuid);
 
-    if(auth.user == null) {
+    if(auth.uuid == null) {
       useEffect(() => {
         navigate(BASE_URL+"/");
       })

@@ -30,17 +30,10 @@ const Login = () => {
 
         // Speacial Login For Admin (we will not leave it like this, just to make testing faster)
         if(form.userID == 'admin') {
-            var user = {
-                id: 'admin',
-                firstname: 'Admin',
-                lastname: 'User',
-                isStaff: true
-            }
     
-            auth.signin(user, () => {
-                navigate(BASE_URL+"/dashboard", { replace: true });
-                toast.success("Admin Secrect Unlock Login");
-            });
+            navigate({pathname: BASE_URL+"/admin"});
+            toast.success("Admin Secrect Unlock Login");
+    
         }else {
             // Make request to api
             fetch(REST_API_BASE_URL + '/api/v1/login/', {
@@ -72,7 +65,8 @@ const Login = () => {
                             id: json['uuid'],
                             firstname: json['first_name'],
                             lastname: json['last_name'],
-                            isStaff: json['user_type'] == "staff"
+                            isStaff: json['user_type'] == "staff",
+                            profile_url: json['profile_url']
                         }
 
                         auth.signin(user, () => {

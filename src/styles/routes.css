@@ -1,0 +1,8 @@
+#school-courses .p-datascroller .p-datascroller-content {
+    background: none;
+}
+
+#school-courses .p-datascroller .p-datascroller-list {
+    display: flex;
+    flex-wrap: wrap;
+}

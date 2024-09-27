@@ -3,27 +3,34 @@ import AppRoute from "./AppRoute";
 
 import { AuthContext } from "./contexts/AuthContext";
 
-import './styles/bootstrap.css';
 import './styles/root.css';
 
-import { PrimeReactProvider } from "primereact/api";
-import 'primereact/resources/themes/lara-light-blue/theme.css';
+import { PrimeReactProvider } from 'primereact/api';
+import "primereact/resources/themes/lara-light-blue/theme.css";
 import 'primeicons/primeicons.css';
+
+import 'primeflex/primeflex.css';
+import 'primeflex/themes/primeone-light.css'; 
 
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-import 'rsuite/dist/rsuite.min.css';
 
 
 function App() {
 
     // Holds the value of the current user
     const [user, setUser] = useState({
-        id: null,
-        firstname: "",
-        lastname: "",
-        isStaff: false
+        user: null,
+        firstname: '',
+        middle_name: '',
+        lastname: '',
+        email: '',
+        profile_url: '',
+        isStaff: false,
+        isAdmin: false, // the admin is seperate from being a staff member 
+        login: () => {},
+        logout: () => {}
     });
 
     //Replaced Notice with react-toastify
@@ -52,12 +59,15 @@ function App() {
     return (
         <>
             <PrimeReactProvider value={settings}>
-                <section>
+                <section className="p-0 m-0 ">
                     <AuthContext.Provider value={{
-                        user: user.id,
+                        uuid: user.id,
+                        middle_name: user.middle_name,
                         firstname: user.firstname,
                         lastname: user.lastname,
+                        profile_url: user.profile_url,
                         isStaff: user.isStaff,
+                        isAdmin: user.isAdmin,
                         signin: handleLogin,
                         logout: handleLogout
                     }}>

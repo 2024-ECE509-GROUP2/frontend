@@ -1,13 +1,4 @@
-html,
-body {
-    margin: 0;
-    font-family: "Montserat";
-    color: #546E7A;
-}
-
-* {
-    box-sizing: border-box;
-}
+/* Moved elsewhere */
 
 .timetable {
     display: grid;

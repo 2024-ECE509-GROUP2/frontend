@@ -1,6 +1,14 @@
+import { useParams } from "react-router-dom"
 import { REST_API_BASE_URL } from "../constants/BaseConfig"
+import { useContext } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
-export default function MaterialsPage() {
+export default function StaffClassroomPage() {
+
+    let {uuid} = useParams();
+
+    let auth = useContext(AuthContext); // We need the Authentication Details For The Meetings
+
     const client = ZoomMtgEmbedded.createClient()
 
     var authEndpoint = REST_API_BASE_URL+'/zoom/v1/meeting/start'

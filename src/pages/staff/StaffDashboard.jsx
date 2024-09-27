@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 
 import "../../styles/dashboard.css"
+
 import TimetableWeek from "../../components/custom/TimetableWeekComponent";
 import TimetableClass from "../../components/custom/TimetableClassComponent";
 import DashboardAssignmentTile from "../../components/custom/DashboardAssignmentTile";
@@ -13,38 +14,18 @@ export default function StaffDashboard() {
     let navigate = useNavigate();
     let auth = useContext(AuthContext);
 
-    console.log(auth.user);
+    console.log(auth.uuid);
 
-    if(auth.user == null) {
+    if(auth.uuid == null) {
       useEffect(() => {
         navigate(BASE_URL+"/");
       })
     }
 
-    function handleLogout(event) {
-        event.preventDefault();
-
-        auth.logout();
-    }
-
     return (
         <>
-            <div className="col-7 dashboard-content">
-                <div className="dashboard-content-row" style={{alignItems: "end", justifyContent: "space-between"}}>
-                    <h6 className="dashboard-welcome">Welcome {auth.firstname}</h6>
-                    <div>
-                        <h6>Week 6</h6>
-
-                    </div>
-                    <div style={{display: "flex", justifyContent: "end"}}>
-                        <a href="#" className="nav-icon-btn has-notification">
-                            <i className="bi-bell" style={{ fontSize: 2.1 + 'rem', paddingRight: 0 }}></i>
-                        </a>
-                        <a href="#" className="nav-icon-btn">
-                            <i className="bi-person-circle " style={{ fontSize: 2.1 + 'rem', paddingRight: 0 }}></i>
-                        </a>
-                    </div>
-                </div>
+            <div className="dashboard-content">
+                
                 <div className="dashboard-content-ongoing">
                     
                     <div className="dashboard-content-header">

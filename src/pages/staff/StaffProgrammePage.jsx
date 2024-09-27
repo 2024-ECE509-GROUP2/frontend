@@ -5,7 +5,7 @@ import { NotificationContext } from "../../contexts/NotificationContex";
 
 const REST_API_BASE_URL = import.meta.env.VITE_REST_API
 
-export default function StaffProgrammePage() {
+export default function SchoolProgrammePage() {
 
 
     let [initialized, setInitialized] = useState(false);
